@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Create PR Document</h1>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <!-- Form untuk PR_Document -->
+    <h2>PR Document</h2>
+    {{ pr_form.as_p }}
+    
+    <!-- Formset untuk PR_Document_Detail -->
+    <h2>PR Document Details</h2>
+    {{ detail_formset.management_form }}  <!-- Wajib untuk formset -->
+    {% for form in detail_formset %}
+        <div class="detail-form">
+            {{ form.as_p }}
+        </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
