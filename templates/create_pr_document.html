@@ -1,24 +1,104 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Create PR Document</h1>
-
-<form method="post">
-    {% csrf_token %}
+<div class="row">
+    <div class="container mt-5">
+        <h1 class="mb-4">Create PR Document</h1>
     
-    <!-- Form untuk PR_Document -->
-    <h2>PR Document</h2>
-    {{ pr_form.as_p }}
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <!-- Form untuk PR_Document -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="card-title mb-0">PR Document</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ pr_form.nomor_pr.id_for_label }}" class="form-label">Nomor PR</label>
+                                {{ pr_form.nomor_pr }}
+                                <div class="invalid-feedback">
+                                    Please provide a valid PR number.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ pr_form.created_date.id_for_label }}" class="form-label">Create date</label>
+                                <input type="text" class="form-control" value="{{ created_date }}" readonly>
+                                <div class="invalid-feedback">
+                                    Please provide a valid date.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ pr_form.created_date.id_for_label }}" class="form-label">Create by</label>
+                                {{ pr_form.created_by }}
+                                <div class="invalid-feedback">
+                                    Please provide a valid user.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
     
-    <!-- Formset untuk PR_Document_Detail -->
-    <h2>PR Document Details</h2>
-    {{ detail_formset.management_form }}  <!-- Wajib untuk formset -->
-    {% for form in detail_formset %}
-        <div class="detail-form">
-            {{ form.as_p }}
-        </div>
-    {% endfor %}
+            <!-- Formset untuk PR_Document_Detail -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="card-title mb-0">PR Document Details</h2>
+                </div>
+                <div class="card-body">
+                    {{ detail_formset.management_form }}
+                    <div id="detail-forms">
+                        {% for form in detail_formset %}
+                            <div class="detail-form mb-4 p-3 border rounded">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="{{ form.line_number.id_for_label }}" class="form-label">Line Number</label>
+                                            {{ form.line_number }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="{{ form.part_number.id_for_label }}" class="form-label">Part Number</label>
+                                            {{ form.part_number }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label for="{{ form.qty.id_for_label }}" class="form-label">Quantity</label>
+                                            {{ form.qty }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label for="{{ form.usage.id_for_label }}" class="form-label">Usage</label>
+                                            {{ form.usage }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="mb-3">
+                                            <label for="{{ form.due.id_for_label }}" class="form-label">Due Date</label>
+                                            {{ form.due }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" id="add-detail-form" class="btn btn-secondary mt-3">Add Detail</button>
+                </div>
+            </div>
     
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    
+    
+</div>
 {% endblock %}
