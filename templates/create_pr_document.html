@@ -1,104 +1,75 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="row">
-    <div class="container mt-5">
-        <h1 class="mb-4">Create PR Document</h1>
-    
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
-            
-            <!-- Form untuk PR_Document -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h2 class="card-title mb-0">PR Document</h2>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="{{ pr_form.nomor_pr.id_for_label }}" class="form-label">Nomor PR</label>
-                                {{ pr_form.nomor_pr }}
-                                <div class="invalid-feedback">
-                                    Please provide a valid PR number.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="{{ pr_form.created_date.id_for_label }}" class="form-label">Create date</label>
-                                <input type="text" class="form-control" value="{{ created_date }}" readonly>
-                                <div class="invalid-feedback">
-                                    Please provide a valid date.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="{{ pr_form.created_date.id_for_label }}" class="form-label">Create by</label>
-                                {{ pr_form.created_by }}
-                                <div class="invalid-feedback">
-                                    Please provide a valid user.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Formset untuk PR_Document_Detail -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h2 class="card-title mb-0">PR Document Details</h2>
-                </div>
-                <div class="card-body">
-                    {{ detail_formset.management_form }}
-                    <div id="detail-forms">
-                        {% for form in detail_formset %}
-                            <div class="detail-form mb-4 p-3 border rounded">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="{{ form.line_number.id_for_label }}" class="form-label">Line Number</label>
-                                            {{ form.line_number }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="{{ form.part_number.id_for_label }}" class="form-label">Part Number</label>
-                                            {{ form.part_number }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="mb-3">
-                                            <label for="{{ form.qty.id_for_label }}" class="form-label">Quantity</label>
-                                            {{ form.qty }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="mb-3">
-                                            <label for="{{ form.usage.id_for_label }}" class="form-label">Usage</label>
-                                            {{ form.usage }}
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="mb-3">
-                                            <label for="{{ form.due.id_for_label }}" class="form-label">Due Date</label>
-                                            {{ form.due }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <button type="button" id="add-detail-form" class="btn btn-secondary mt-3">Add Detail</button>
-                </div>
-            </div>
-    
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+{% load static %}
+<div class="row mb-2 mb-xl-3">
+    <div class="col-auto d-none d-sm-block">
+        <h3><strong>{{ title|title }}</strong> {{ title_action|title }}</h3>
     </div>
-    
-    
+    <div class="col-auto ms-auto text-end mt-n1">
+        <!-- <a href="#" data-micromodal-trigger="modal-1" class="btn btn-success">New Event</a>
+        <a href="{% url 'create_pr_document' %}" class="btn btn-success">New Event</a> -->
+        <button class="btn btn-primary" type="button" onclick="window.history.back();">Back</button>
+    </div>
 </div>
-{% endblock %}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card mb-4 border">
+            <div class="card-header px-4 pt-4">
+                <div class="card-actions float-end">
+                </div>
+                <h3 class="fw-bolder">{{ event }}</h3>
+                <div class="badge {% if active_status %}bg-success{% else %}bg-danger{% endif %} my-2">
+                    {% if active_status %}Active{% else %}Inactive{% endif %}
+                </div>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_pr" class="display row-border" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <!-- Checkbox Check All di header -->
+                                    <th><input type="checkbox" class="form-check-input item-checkbox" id="select-all"></th>
+                                    <th>No</th> <!-- Kolom untuk nomor urut -->
+                                    <th>Part Number<span class="text-danger"> *</span></th>
+                                    <th>Description</th>
+                                    <th>Qty<span class="text-danger"> *</span></th>
+                                    <th>UoM</th>
+                                    <th>Useage</th>
+                                    <th>Due Date</th>
+                                    <th>Remove?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="form-check-input item-checkbox"></td>
+                                    <td>{{items|length|add:1}}</td>
+                                    <td><input type="text" class="form-control" name="part_number" required></td>
+                                    <td><input type="text" class="form-control" name="description"></td>
+                                    <td><input type="text" class="form-control" name="qty" required></td>
+                                    <td><input type="text" class="form-control" name="uom" ></td>
+                                    <td><input type="text" class="form-control" name="usage" ></td>
+                                    <td><input type="text" class="form-control" name="due" ></td>
+                                    <td><button class="btn btn-danger btn-sm deleteRow"><i data-feather="trash-2"></i></button></td> 
+                                </tr>
+                                <!-- More rows can be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="button" id="addRow" class="btn btn-info">Add New Row</button>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block modal %}
+    {% include 'modal.html' %}
+{% endblock modal %}
+
+
+{% endblock content %}
